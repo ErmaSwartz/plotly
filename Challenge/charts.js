@@ -61,21 +61,21 @@ function buildCharts(sample) {
     // 3. Create a variable that holds the samples array. 
     var samples = data.samples;
       // 4. Create a variable that filters the samples for the object with the desired sample number.
-    var resultsArray = samples.filter(samplesObject => samplesObject.id == sample);
+    var resultsArray = samples.filter(sampleObj => sampleObj.id == sample);
       //  5. Create a variable that holds the first sample in the array.
     var firstSample = resultsArray[0];
 
       // 6. Create variables that hold the otu_ids, otu_labels, and sample_values.
-    var ids = firstSample.otu_ids
-    var labels = firstSample.otu_labels
-    var values = firstSample.otu_labels
+    var ids = firstSample.otu_ids;
+    var labels = firstSample.otu_labels;
+    var values = firstSample.sample_values;
 
 
     // 7. Create the yticks for the bar chart.
     // Hint: Get the the top 10 otu_ids and map them in descending order  
     //  so the otu_ids with the most bacteria are last. 
 
-    var yticks = ids.map(samplesObject => "OTU" + samplesObject).slice(0,10).reverse();
+    var yticks = ids.map(sampleObj => "OTU" + sampleObj).slice(0,10).reverse();
 
     // 8. Create the trace for the bar chart. 
     var barData = [{
@@ -86,10 +86,74 @@ function buildCharts(sample) {
       text: labels
     }];
     // 9. Create the layout for the bar chart. 
-    var barLayout = { title: "Belly Button Biodiversity Dashboard"
-     
-    };
+    var barLayout = { title: "<b>Belly Button Biodiversity Dashboard</b>"};
     // 10. Use Plotly to plot the data with the layout. 
     Plotly.newPlot("bar", barData, barLayout);
+    // 1. Create the trace for the bubble chart.
+    var bubbleData = [ { 
+      x: ids,
+      y: values,
+      text: labels,
+      mode: "markers",
+      marker: {
+        size: values, 
+        color: ids,
+        colorscale: true
+      }
+    }
+   
+    ];
+
+    // 2. Create the layout for the bubble chart.
+    var bubbleLayout = {
+      title: "<b>Belly Button Biodiversity Bubble Chart</b>",
+      margin: {t:0},
+      xaxis: {title: "OTU"},
+      margin: {title: "OTU Id"},
+      hovermode: "closest"
+    };
+
+    // 3. Use Plotly to plot the data with the layout.
+    Plotly.newPlot("bubble", bubbleData, bubbleLayout);
+
+     // 1. Create a variable that filters the metadata array for the object with the desired sample number.
+     var gauge = data.metadata.filter(metadataObj => metadataObj.id == sample);  
+
+     // 2. Create a variable that holds the first sample in the metadata array.
+     var gaugeResults = gauge[0];
+ 
+     // 3. Create a variable that holds the washing frequency.  
+     var wfreqs = gaugeResults.wfreq;
+
+    // 4. Create the trace for the gauge chart.
+    var gaugeData = [{ 
+      type: "indicator",
+      mode: "gauge+number",
+      value: wfreqs, 
+      title: {text: "<b>Belly Button Biodiversity Gauge</b>"},
+      gauge: {
+      axis: {range: [null, 10], tickwidth: 1, tickcolor: "darkblue" },
+      bar: { color: "darkblue" },
+      steps:[
+        {range: [0, 2], color: "lightseagreen"},
+        {range: [2, 4], color: "turquoise"},
+        {range: [4, 6], color: "orchid"},
+        {range: [6, 8], color: "violet"},
+        {range: [8, 10], color: "deeppink"}
+      ],
+      dtick: 2
+    }
+    }];
+    
+    // 5. Create the layout for the gauge chart.
+    var gaugeLayout = { automargin: true
+    
+    };
+
+    // 6. Use Plotly to plot the gauge data and layout.
+    Plotly.newPlot("gauge", gaugeData, gaugeLayout)
   });
-}
+  }
+
+  
+   
